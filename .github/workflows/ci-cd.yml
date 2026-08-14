@@ -54,20 +54,26 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v3
 
+      - name: Install kubectl CLI Tool
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+
       - name: Validate & Deploy Kubernetes Manifests
         env:
           AWS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
         run: |
           if [ -z "$AWS_KEY" ]; then
-            echo "ℹ️ AWS Secrets not set on repo. Executing K8s manifest validation dry-run..."
+            echo "ℹ️ AWS Credentials not configured on repository secrets."
+            echo "Running dry-run validation on production Kubernetes manifests..."
             kubectl apply --dry-run=client -f k8s/configmap.yaml
             kubectl apply --dry-run=client -f k8s/secret.yaml
             kubectl apply --dry-run=client -f k8s/deployment.yaml
             kubectl apply --dry-run=client -f k8s/hpa.yaml
             kubectl apply --dry-run=client -f k8s/service.yaml
-            echo "✅ Kubernetes Manifests Validated Successfully (0 Errors)"
+            echo "✅ All 5 Kubernetes Manifests Validated Successfully (0 Errors)"
           else
-            echo "🚀 AWS Credentials detected. Deploying to Amazon EKS Cluster..."
+            echo "🚀 AWS Secrets detected. Deploying to Amazon EKS Cluster..."
             aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
             aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
             aws configure set default.region us-east-1
