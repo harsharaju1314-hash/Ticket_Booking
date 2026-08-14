@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  eventflow-postgres:
+    image: postgres:15-alpine
+    container_name: eventflow-postgres
+    environment:
+      POSTGRES_DB: eventflow_db
+      POSTGRES_USER: eventflow_user
+      POSTGRES_PASSWORD: secret_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U eventflow_user -d eventflow_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  eventflow-redis:
+    image: redis:7-alpine
+    container_name: eventflow-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  eventflow-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: eventflow-app
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:postgresql://eventflow-postgres:5432/eventflow_db
+      SPRING_DATASOURCE_USERNAME: eventflow_user
+      SPRING_DATASOURCE_PASSWORD: secret_password
+      SPRING_REDIS_HOST: eventflow-redis
+      SPRING_REDIS_PORT: 6379
+    depends_on:
+      eventflow-postgres:
+        condition: service_healthy
+      eventflow-redis:
+        condition: service_healthy
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: eventflow-prometheus
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    depends_on:
+      - eventflow-app
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: eventflow-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+    depends_on:
+      - prometheus
+
+volumes:
+  postgres_data:

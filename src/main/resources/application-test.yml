@@ -1,0 +1,44 @@
+spring:
+  application:
+    name: eventflow-engine
+
+  datasource:
+    url: jdbc:h2:mem:eventflow_db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=PostgreSQL
+    username: sa
+    password: 
+    driver-class-name: org.h2.Driver
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    defer-datasource-initialization: true
+
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:db/migration/V2__seed_data.sql
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  flyway:
+    enabled: false
+
+server:
+  port: 8080
+
+eventflow:
+  booking:
+    reservation-hold-duration-seconds: 600
+  redis:
+    lock-lease-time-ms: 3000
+    lock-wait-time-ms: 1000

@@ -1,0 +1,15 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+scrape_configs:
+  - job_name: 'eventflow-spring-boot'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['eventflow-app:8080', 'localhost:8080']
+        labels:
+          application: 'eventflow-engine'
+
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']

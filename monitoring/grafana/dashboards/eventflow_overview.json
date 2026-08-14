@@ -1,0 +1,65 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 1,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "title": "Booking Engine Throughput (RPS)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "rate(eventflow_bookings_total[1m])",
+          "legendFormat": "Successful Bookings/sec"
+        },
+        {
+          "expr": "rate(eventflow_bookings_failed_total[1m])",
+          "legendFormat": "Oversold Rejections/sec"
+        }
+      ]
+    },
+    {
+      "title": "P99 Reservation Latency (ms)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.99, rate(eventflow_booking_latency_seconds_bucket[1m])) * 1000",
+          "legendFormat": "P99 Latency (ms)"
+        }
+      ]
+    },
+    {
+      "title": "Kubernetes Pod Replica Auto-Scale Count",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 8 },
+      "targets": [
+        {
+          "expr": "kube_deployment_status_replicas{deployment='eventflow-backend'}",
+          "legendFormat": "Active Pod Replicas"
+        }
+      ]
+    },
+    {
+      "title": "HikariCP Active DB Connections",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 8 },
+      "targets": [
+        {
+          "expr": "hikaricp_connections_active{pool='EventFlowHikariCP'}",
+          "legendFormat": "Active Connections"
+        }
+      ]
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["eventflow", "concurrency", "spring-boot"],
+  "time": { "from": "now-15m", "to": "now" },
+  "title": "EventFlow - High Concurrency Monitoring Overview"
+}
