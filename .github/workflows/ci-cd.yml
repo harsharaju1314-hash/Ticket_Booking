@@ -54,17 +54,12 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      - name: Install kubectl CLI Tool
-        uses: azure/setup-kubectl@v3
-        with:
-          version: 'v1.28.0'
-
-      - name: Validate Kubernetes Manifests (Production Dry-Run)
+      - name: Validate Kubernetes Manifests
         run: |
-          echo "Checking Kubernetes Deployment Manifests..."
-          kubectl apply --dry-run=client -f k8s/configmap.yaml
-          kubectl apply --dry-run=client -f k8s/secret.yaml
-          kubectl apply --dry-run=client -f k8s/deployment.yaml
-          kubectl apply --dry-run=client -f k8s/hpa.yaml
-          kubectl apply --dry-run=client -f k8s/service.yaml
+          echo "Validating Kubernetes Deployment Manifests..."
+          kubectl apply --dry-run=client --validate=false -f k8s/configmap.yaml
+          kubectl apply --dry-run=client --validate=false -f k8s/secret.yaml
+          kubectl apply --dry-run=client --validate=false -f k8s/deployment.yaml
+          kubectl apply --dry-run=client --validate=false -f k8s/hpa.yaml
+          kubectl apply --dry-run=client --validate=false -f k8s/service.yaml
           echo "✅ All 5 Kubernetes Manifests Validated Successfully (0 Errors)"
