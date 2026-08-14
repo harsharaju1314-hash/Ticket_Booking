@@ -12,10 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Build Docker Image Locally
         run: docker build -t eventflow-backend:${{ github.sha }} .
@@ -52,36 +52,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install kubectl CLI Tool
         uses: azure/setup-kubectl@v3
         with:
           version: 'v1.28.0'
 
-      - name: Validate & Deploy Kubernetes Manifests
-        env:
-          AWS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      - name: Validate Kubernetes Manifests (Production Dry-Run)
         run: |
-          if [ -z "$AWS_KEY" ]; then
-            echo "ℹ️ AWS Credentials not configured on repository secrets."
-            echo "Running dry-run validation on production Kubernetes manifests..."
-            kubectl apply --dry-run=client -f k8s/configmap.yaml
-            kubectl apply --dry-run=client -f k8s/secret.yaml
-            kubectl apply --dry-run=client -f k8s/deployment.yaml
-            kubectl apply --dry-run=client -f k8s/hpa.yaml
-            kubectl apply --dry-run=client -f k8s/service.yaml
-            echo "✅ All 5 Kubernetes Manifests Validated Successfully (0 Errors)"
-          else
-            echo "🚀 AWS Secrets detected. Deploying to Amazon EKS Cluster..."
-            aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-            aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            aws configure set default.region us-east-1
-            aws eks update-kubeconfig --region us-east-1 --name eventflow-eks-cluster
-            kubectl apply -f k8s/configmap.yaml
-            kubectl apply -f k8s/secret.yaml
-            kubectl apply -f k8s/deployment.yaml
-            kubectl apply -f k8s/hpa.yaml
-            kubectl apply -f k8s/service.yaml
-            kubectl rollout status deployment/eventflow-backend --timeout=180s
-          fi
+          echo "Checking Kubernetes Deployment Manifests..."
+          kubectl apply --dry-run=client -f k8s/configmap.yaml
+          kubectl apply --dry-run=client -f k8s/secret.yaml
+          kubectl apply --dry-run=client -f k8s/deployment.yaml
+          kubectl apply --dry-run=client -f k8s/hpa.yaml
+          kubectl apply --dry-run=client -f k8s/service.yaml
+          echo "✅ All 5 Kubernetes Manifests Validated Successfully (0 Errors)"
