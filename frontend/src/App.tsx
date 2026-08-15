@@ -5,6 +5,7 @@ import { AutoSlider } from './components/AutoSlider';
 import { EventGrid } from './components/EventGrid';
 import { SeatPicker } from './components/SeatPicker';
 import { DigitalPassModal } from './components/DigitalPassModal';
+import { LoginModal } from './components/LoginModal';
 import type { Event, ReservationResponse } from './types';
 import { Ticket } from 'lucide-react';
 
@@ -16,6 +17,8 @@ export default function App() {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [confirmedPass, setConfirmedPass] = useState<ReservationResponse | null>(null);
   const [userPasses, setUserPasses] = useState<ReservationResponse[]>([]);
+  const [isLoginOpen, setIsLoginOpen] = useState<boolean>(false);
+  const [userName, setUserName] = useState<string>('Harsha Varma');
 
   useEffect(() => {
     fetchEvents();
@@ -79,6 +82,8 @@ export default function App() {
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         passCount={userPasses.length}
+        userName={userName}
+        onOpenLogin={() => setIsLoginOpen(true)}
       />
 
       {/* Main Content Area */}
@@ -188,6 +193,13 @@ export default function App() {
           onClose={() => setConfirmedPass(null)}
         />
       )}
+
+      {/* Login & Sign Up Modal */}
+      <LoginModal
+        isOpen={isLoginOpen}
+        onClose={() => setIsLoginOpen(false)}
+        onLoginSuccess={(name) => setUserName(name)}
+      />
     </div>
   );
 }

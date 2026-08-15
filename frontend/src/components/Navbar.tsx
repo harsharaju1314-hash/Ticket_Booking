@@ -7,6 +7,8 @@ interface NavbarProps {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   passCount: number;
+  userName?: string;
+  onOpenLogin?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -15,6 +17,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   searchQuery,
   setSearchQuery,
   passCount,
+  userName,
+  onOpenLogin,
 }) => {
   return (
     <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-2xl border-b border-slate-200/90 px-6 py-4 transition-all shadow-xs">
@@ -94,16 +98,21 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
           </div>
 
-          {/* User Profile Pill */}
-          <div className="hidden lg:flex items-center gap-2.5 bg-white border border-slate-200/90 px-3.5 py-1.5 rounded-2xl shadow-2xs hover:shadow-xs transition-all">
-            <div className="w-7.5 h-7.5 rounded-xl bg-gradient-to-tr from-rose-500 via-purple-600 to-amber-500 flex items-center justify-center text-white shadow-xs">
+          {/* User Profile / Login Pill */}
+          <button
+            onClick={() => onOpenLogin ? onOpenLogin() : null}
+            className="hidden lg:flex items-center gap-2.5 bg-white border border-slate-200/90 px-3.5 py-1.5 rounded-2xl shadow-2xs hover:shadow-xs transition-all cursor-pointer group"
+          >
+            <div className="w-7.5 h-7.5 rounded-xl bg-gradient-to-tr from-rose-500 via-purple-600 to-amber-500 flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-transform">
               <User className="w-4 h-4" />
             </div>
             <div className="flex flex-col text-left">
-              <span className="text-xs font-black text-slate-900 leading-tight">Harsha Varma</span>
-              <span className="text-[9px] font-black text-amber-600 uppercase tracking-widest">VIP Member</span>
+              <span className="text-xs font-black text-slate-900 leading-tight group-hover:text-rose-600 transition-colors">
+                {userName || 'Harsha Varma'}
+              </span>
+              <span className="text-[9px] font-black text-amber-600 uppercase tracking-widest">VIP Member • Sign In</span>
             </div>
-          </div>
+          </button>
         </div>
 
       </div>
