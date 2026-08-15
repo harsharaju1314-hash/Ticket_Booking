@@ -11,7 +11,7 @@
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-EKS%20Ready-326CE5.svg)](https://kubernetes.io/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-A production-grade, distributed event ticketing engine engineered to handle extreme traffic surges (Flash Sales / Stadium Ticket Drops) without race conditions, double-booking, or inventory overselling. Features a modern **BookMyConcert** React 18 + TypeScript + Tailwind CSS luxury web app.
+A high-concurrency, distributed event ticketing engine engineered to handle traffic surges (Flash Sales / Stadium Ticket Drops) without race conditions, double-booking, or inventory overselling. Features a modern **BookMyConcert** React 18 + TypeScript + Tailwind CSS luxury web app.
 
 ---
 
@@ -120,7 +120,7 @@ Oversold Tickets         : 0 (Zero Overselling)
 
 ## ♾️ DevOps, Cloud Infrastructure & CI/CD Pipeline
 
-This application is built with a complete, production-ready DevOps ecosystem spanning containerization, cloud IaC, Kubernetes scaling, and real-time observability:
+This application is built with a complete DevOps ecosystem spanning containerization, cloud IaC, Kubernetes scaling, and real-time observability:
 
 ```mermaid
 flowchart LR
@@ -140,7 +140,7 @@ flowchart LR
 - **Docker Compose Orchestration** ([`docker-compose.yml`](file:///docker-compose.yml)): Single-command environment spinning up Spring Boot, Redis Cache, and PostgreSQL database with health-check dependency ordering.
 
 ### 3. ☁️ Infrastructure as Code (Terraform IaC for AWS EKS)
-- **Terraform Modules** ([`terraform/`](file:///terraform/)): Provisions production cloud infrastructure on AWS:
+- **Terraform Modules** ([`terraform/`](file:///terraform/)): Provisions cloud infrastructure on AWS:
   - Custom AWS VPC with public & private subnets ([`vpc.tf`](file:///terraform/vpc.tf)).
   - Managed Amazon EKS Kubernetes Cluster ([`eks.tf`](file:///terraform/eks.tf)).
   - Security Groups, IAM Roles & Ingress Rules ([`security_groups.tf`](file:///terraform/security_groups.tf)).
